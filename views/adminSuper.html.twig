@@ -20,7 +20,7 @@
                     {% endif %}
                 </p>
             </div>
-            <form method="POST" action="/litemvc/assign_ticket">
+            <form method="POST" action="/tigergym/assign_ticket">
                 <label for="tech">attribuer le ticket à </label>
                 <input type="hidden" name="ticket_id" value="{{ ticket.id }}"> 
                 <select class="form-control" name="user_id">
@@ -39,7 +39,7 @@
 </div>
 <div class="col-6 mt-5">
     <h1 class="text-center">Ajout d'un ticket</h1>
-    <form action="/litemvc/create_ticket" method="POST" >
+    <form action="/tigergym/create_ticket" method="POST" >
        
         <div class="mt-5">
             <label for="title" >Titre du ticket </label>

@@ -41,7 +41,7 @@ class UserController extends Controller
                         $_SESSION["username"] = $user->username;
                         $_SESSION["role"] = $user->role;
                         $_SESSION["user_id"] = $user->id;
-                        header('Location: /litemvc/admin');
+                        header('Location: /tigergym/admin');
                         exit;
                     } else {
                         $error = 'Impossible de créer l\'utilisateur.';
@@ -85,11 +85,11 @@ class UserController extends Controller
                         $_SESSION["username"] = $user->username;
                         $_SESSION["role"] = $user->role;
                         $_SESSION["user_id"] = $user->id;
-                        header('Location: /litemvc/admin');
+                        header('Location: /tigergym/admin');
                     }
                     else{
                         
-                        header('Location: /litemvc/connection');
+                        header('Location: /tigergym/connection');
                     }
 
                  }catch(\PDOException $e){
@@ -104,7 +104,7 @@ class UserController extends Controller
     public function deconnection(){
         session_unset();
         session_destroy();
-        header('Location: /litemvc/');
+        header('Location: /tigergym/');
     }
     public function admin(){
       

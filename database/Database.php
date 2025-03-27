@@ -4,7 +4,7 @@ namespace Database;
 
 class Database {
     private static ?\PDO $instance = null;
-    private static string $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=litemvc;charset=utf8';
+    private static string $dsn = 'mysql:host=127.0.0.1;port=3306;dbname=tigergym;charset=utf8';
     private static string $username = 'root';
     private static string $password = '';
 
