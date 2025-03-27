@@ -1,83 +1,93 @@
     <?php
-    session_start();
-    require 'vendor/autoload.php';
+session_start();
+require 'vendor/autoload.php';
 
-    use Controllers\HomeController;
-    use Controllers\UserController;
-    use Database\Database;
-    use Middlewares\AuthMiddleware;
+use Controllers\HomeController;
+use Controllers\UserController;
+use Controllers\ArticleController;
+use Database\Database;
+use Middlewares\AuthMiddleware;
 
-    // Créer une instance du routeur
-    $router = new AltoRouter();
+// Configuration de Twig
+$loader = new \Twig\Loader\FilesystemLoader(__DIR__ . '/views');
+$twig = new \Twig\Environment($loader, [
+    'cache' => false,
+    'debug' => true
+]);
 
-    // Définir le chemin de base
-    $router->setBasePath('/base');
+// Créer une instance du routeur
+$router = new AltoRouter();
 
+// Définir le chemin de base
+$router->setBasePath('/tigergym');
 
+// Définir les routes
+$router->map('GET', '/', function () use ($twig) {
+    $db = Database::getInstance();
+    $homeController = new HomeController($db, $twig);
+    $homeController->index();
+});
 
+// inscription
+$router->map('GET', '/inscription', function () use ($twig) {
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->inscription();
+});
 
-    // Définir les routes
-    $router->map('GET', '/', function () {
-        $db = Database::getInstance();
-        $homeController = new HomeController($db);
-        $homeController->index();
-    });
+$router->map('POST', '/inscription', function () use ($twig) {
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->inscription(); 
+});
 
-   
+// connection
+$router->map('GET', '/connection', function () use ($twig) {
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->index();
+});
 
-    // inscription
-    $router->map('GET', '/inscription', function () {
-        
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController->inscription();
-    });
-    $router->map('POST', '/inscription', function () {
-        
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController->inscription(); 
-    });
+$router->map('GET', '/deconnection', function () use ($twig) {
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->deconnection();
+});
 
-    // connection
-    $router->map('GET', '/connection', function () {
-        
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController->index();
-    });
-    $router->map('GET', '/deconnection', function () {
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController ->deconnection();
-    });
-    $router->map('POST', '/connection', function () {
-        
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController->connection();
-    });
+$router->map('POST', '/connection', function () use ($twig) {
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->connection();
+});
 
-    // route Admin
-    $router->map('GET', '/admin', function () {
-      
-        AuthMiddleware::auth();
-        $db = Database::getInstance();
-        $userController = new UserController($db);
-        $userController->admin();
-    });
-   
-    // Matcher et gérer la requête
-    $match = $router->match();
+// route Admin
+$router->map('GET', '/admin', function () use ($twig) {
+    AuthMiddleware::auth();
+    $db = Database::getInstance();
+    $userController = new UserController($db, $twig);
+    $userController->admin();
+});
 
-    if (is_array($match) && is_callable($match['target'])) {
-        // Débogage des paramètres de la route
-        
+// Routes pour les articles
+$router->map('GET', '/article/[i:id]', function($id) use ($twig) {
+    $db = Database::getInstance();
+    $controller = new ArticleController($db, $twig);
+    $controller->show($id);
+});
 
-        // Appeler la fonction cible
-        call_user_func_array($match['target'], $match['params']);
-    } else {
-        // Aucun chemin correspondant, renvoyer une erreur 404
-         ($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-        echo 'Page introuvable.';
-    }
+$router->map('GET', '/categories/[*:category]', function($category) use ($twig) {
+    $db = Database::getInstance();
+    $controller = new ArticleController($db, $twig);
+    $controller->category($category);
+});
+
+// Matcher et gérer la requête
+$match = $router->match();
+
+if (is_array($match) && is_callable($match['target'])) {
+    call_user_func_array($match['target'], $match['params']);
+} else {
+    // Page 404
+    header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+    echo $twig->render('404.html.twig');
+}

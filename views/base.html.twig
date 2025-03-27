@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TigerGym{% endblock %}</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="/tigergym/assets/styles.css">
+</head>
+<body>
+    <nav class="main-nav">
+        <div class="nav-brand">
+            <a href="/" class="logo">
+                <i class="fas fa-fire"></i>
+                TigerGym
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="/" class="active">Accueil</a>
+            <a href="/categories/machines">Machines</a>
+            <a href="/categories/vetements">Vêtements</a>
+            <a href="/categories/complements">Compléments</a>
+            <a href="/contact">Contact</a>
+            <a href="/connexion">Connexion</a>
+
+
+        </div>
+        <div class="nav-actions">
+            <a href="/recherche" class="search-btn">
+                <i class="fas fa-search"></i>
+            </a>
+        </div>
+    </nav>
+
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="main-footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>TigerGym</h3>
+                <p>Votre guide de référence pour l'équipement sportif de qualité.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Catégories</h3>
+                <ul>
+                    <li><a href="/categories/machines">Machines</a></li>
+                    <li><a href="/categories/vetements">Vêtements</a></li>
+                    <li><a href="/categories/complements">Compléments</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <ul>
+                    <li><a href="/contact">Nous contacter</a></li>
+                    <li><a href="/about">À propos</a></li>
+                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; {{ "now"|date("Y") }} TigerGym - Tous droits réservés</p>
+        </div>
+    </footer>
+</body>
+</html>

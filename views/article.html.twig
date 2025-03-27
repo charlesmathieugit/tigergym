@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ article.name }} - TigerGym{% endblock %}
+
+{% block content %}
+    <div class="article-header">
+        <div class="article-header-content">
+            <span class="article-category">{{ article.category|replace({'-': ' '})|title }}</span>
+            <h1 class="article-title">{{ article.name }}</h1>
+            <div class="article-meta">
+                <span class="article-price">{{ article.price }} €</span>
+                <div class="article-rating">
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star"></i>
+                    <i class="fas fa-star-half-alt"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="article-content">
+        <div class="article-main">
+            <div class="article-image-gallery">
+                {% if article.image %}
+                    <img src="{{ article.image }}" alt="{{ article.name }}" class="article-main-image">
+                {% else %}
+                    <div class="article-placeholder">
+                        <i class="fas fa-dumbbell"></i>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="article-info">
+                <div class="article-description">
+                    <h2>Description</h2>
+                    {{ article.description }}
+                </div>
+
+                <div class="article-specs">
+                    <h2>Caractéristiques</h2>
+                    <ul>
+                        <li><strong>Marque:</strong> {{ article.brand ?? 'Non spécifié' }}</li>
+                        <li><strong>Catégorie:</strong> {{ article.category|replace({'-': ' '})|title }}</li>
+                        <li><strong>Disponibilité:</strong> En stock</li>
+                    </ul>
+                </div>
+
+                <div class="article-actions">
+                    <div class="article-price-box">
+                        <span class="current-price">{{ article.price }} €</span>
+                        {% if article.old_price %}
+                            <span class="old-price">{{ article.old_price }} €</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ article.link|default('#') }}" class="cta-button" target="_blank">
+                        <i class="fas fa-shopping-cart"></i>
+                        Voir l'offre
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        {% if relatedArticles|length > 0 %}
+            <div class="related-articles">
+                <h2>Articles similaires</h2>
+                <div class="products-grid">
+                    {% for related in relatedArticles %}
+                        <article class="product-card">
+                            {% if related.image %}
+                                <img src="{{ related.image }}" alt="{{ related.name }}" class="product-image">
+                            {% else %}
+                                <div class="product-image" style="background: linear-gradient(45deg, var(--primary-dark), var(--primary));">
+                                    <div style="height: 100%; display: flex; align-items: center; justify-content: center;">
+                                        <i class="fas fa-dumbbell" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            <div class="product-overlay"></div>
+                            <div class="product-content">
+                                <span class="product-category">{{ related.category|replace({'-': ' '})|title }}</span>
+                                <h3 class="product-title">{{ related.name }}</h3>
+                                <p class="product-description">{{ related.description }}</p>
+                                <div class="product-meta">
+                                    <span class="product-price">{{ related.price }} €</span>
+                                    <div class="product-rating">
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star"></i>
+                                        <i class="fas fa-star-half-alt"></i>
+                                    </div>
+                                </div>
+                                <a href="/tigergym/article/{{ related.id }}" class="product-link">
+                                    <i class="fas fa-eye"></i>
+                                    Voir le produit
+                                </a>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}

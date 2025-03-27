@@ -2,24 +2,27 @@
 
 namespace Controllers;
 
-use PDO;
+use Models\ArticleModel;
 
-class HomeController extends Controller
-{
-    public function __construct(PDO $database)
-    {
-        parent::__construct($database);
+class HomeController {
+    private $db;
+    private $twig;
+    private $articleModel;
+
+    public function __construct($db, $twig) {
+        $this->db = $db;
+        $this->twig = $twig;
+        $this->articleModel = new ArticleModel($db);
     }
 
-    public function index()
-    {
-        $data = [
-            "title" => "Page d'accueil",
-            "h1" => "Bienvenue",
-            "content" => "Ceci est la page d'accueil.",
-            "fruits"=>["pommes","fraise"]
-        ];
-
-        $this->render("home.html.twig", $data);
+    public function index() {
+        $featuredArticles = $this->articleModel->getFeaturedArticles();
+        $latestArticles = $this->articleModel->getLatestArticles();
+        
+        echo $this->twig->render('home.html.twig', [
+            'featuredArticles' => $featuredArticles,
+            'latestArticles' => $latestArticles,
+            'pageTitle' => 'TigerGym - Votre guide du matériel sportif'
+        ]);
     }
 }
