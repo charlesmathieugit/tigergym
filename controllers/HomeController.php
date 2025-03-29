@@ -22,7 +22,12 @@ class HomeController {
         echo $this->twig->render('home.html.twig', [
             'featuredArticles' => $featuredArticles,
             'latestArticles' => $latestArticles,
-            'pageTitle' => 'TigerGym - Votre guide du matériel sportif'
+            'pageTitle' => 'TigerGym - Votre guide du matériel sportif',
+            'app' => [
+                'request' => [
+                    'pathInfo' => '/tigergym/'
+                ]
+            ]
         ]);
     }
 }

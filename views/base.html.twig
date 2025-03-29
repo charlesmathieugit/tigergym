@@ -11,23 +11,28 @@
 <body>
     <nav class="main-nav">
         <div class="nav-brand">
-            <a href="/" class="logo">
+            <a href="/tigergym/" class="logo">
                 <i class="fas fa-fire"></i>
                 TigerGym
             </a>
         </div>
         <div class="nav-links">
-            <a href="/" class="active">Accueil</a>
-            <a href="/categories/machines">Machines</a>
-            <a href="/categories/vetements">Vêtements</a>
-            <a href="/categories/complements">Compléments</a>
-            <a href="/contact">Contact</a>
-            <a href="/connexion">Connexion</a>
-
-
+            <a href="/tigergym/" class="{{ app.request.pathInfo == '/tigergym/' ? 'active' : '' }}">Accueil</a>
+            <a href="/tigergym/machines" class="{{ app.request.pathInfo == '/tigergym/machines' ? 'active' : '' }}">Machines</a>
+            <div class="dropdown">
+                <a href="#" class="{{ app.request.pathInfo starts with '/tigergym/vetements' ? 'active' : '' }}">Vêtements <i class="fas fa-chevron-down"></i></a>
+                <div class="dropdown-content">
+                    <a href="/tigergym/vetements-hommes" class="{{ app.request.pathInfo == '/tigergym/vetements-hommes' ? 'active' : '' }}">Hommes</a>
+                    <a href="/tigergym/vetements-femmes" class="{{ app.request.pathInfo == '/tigergym/vetements-femmes' ? 'active' : '' }}">Femmes</a>
+                    <a href="/tigergym/vetements" class="{{ app.request.pathInfo == '/tigergym/vetements' ? 'active' : '' }}">Tous les vêtements</a>
+                </div>
+            </div>
+            <a href="/tigergym/complements" class="{{ app.request.pathInfo == '/tigergym/complements' ? 'active' : '' }}">Compléments</a>
+            <a href="/tigergym/contact" class="{{ app.request.pathInfo == '/tigergym/contact' ? 'active' : '' }}">Contact</a>
+            <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">Connexion</a>
         </div>
         <div class="nav-actions">
-            <a href="/recherche" class="search-btn">
+            <a href="/tigergym/recherche" class="search-btn">
                 <i class="fas fa-search"></i>
             </a>
         </div>
@@ -46,17 +51,17 @@
             <div class="footer-section">
                 <h3>Catégories</h3>
                 <ul>
-                    <li><a href="/categories/machines">Machines</a></li>
-                    <li><a href="/categories/vetements">Vêtements</a></li>
-                    <li><a href="/categories/complements">Compléments</a></li>
+                    <li><a href="/tigergym/machines">Machines</a></li>
+                    <li><a href="/tigergym/vetements">Vêtements</a></li>
+                    <li><a href="/tigergym/complements">Compléments</a></li>
                 </ul>
             </div>
             <div class="footer-section">
                 <h3>Contact</h3>
                 <ul>
-                    <li><a href="/contact">Nous contacter</a></li>
-                    <li><a href="/about">À propos</a></li>
-                    <li><a href="/mentions-legales">Mentions légales</a></li>
+                    <li><a href="/tigergym/contact">Nous contacter</a></li>
+                    <li><a href="/tigergym/about">À propos</a></li>
+                    <li><a href="/tigergym/mentions-legales">Mentions légales</a></li>
                 </ul>
             </div>
         </div>

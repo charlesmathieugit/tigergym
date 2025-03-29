@@ -14,9 +14,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
--- Listage des données de la table tigergym.comments : ~0 rows (environ)
-DELETE FROM `comments`;
-
 -- Listage des données de la table tigergym.articles : ~12 rows (environ)
 DELETE FROM `articles`;
 INSERT INTO `articles` (`id`, `name`, `description`, `price`, `image`, `category`, `stock`, `size_available`, `created_at`, `updated_at`) VALUES
@@ -33,6 +30,9 @@ INSERT INTO `articles` (`id`, `name`, `description`, `price`, `image`, `category
 	(11, 'BCAA 2:1:1', 'Acides aminés essentiels - 100 gélules', 29.99, NULL, 'complements', 80, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
 	(12, 'Pre-Workout Boost', 'Booster d\'énergie saveur fruits rouges - 300g', 34.99, NULL, 'complements', 60, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26');
 
+-- Listage des données de la table tigergym.comments : ~0 rows (environ)
+DELETE FROM `comments`;
+
 -- Listage des données de la table tigergym.ratings : ~0 rows (environ)
 DELETE FROM `ratings`;
 
@@ -46,3 +46,9 @@ INSERT INTO `users` (`id`, `email`, `password`, `firstname`, `lastname`, `addres
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
+(1, 'T-Shirt Performance', '...', 'vetements-hommes', ...),
+(2, 'Short Training', '...', 'vetements-hommes', ...),
+(3, 'Débardeur Muscle', '...', 'vetements-hommes', ...),
+(4, 'Legging Fitness', '...', 'vetements-femmes', ...),
+(5, 'Brassière Sport Pro', '...', 'vetements-femmes', ...),
+(6, 'Top Training', '...', 'vetements-femmes', ...)

@@ -68,7 +68,30 @@ $router->map('GET', '/admin', function () use ($twig) {
     $userController->admin();
 });
 
-// Routes pour les articles
+// Routes pour les catégories
+$db = Database::getInstance();
+$articleController = new ArticleController($db, $twig);
+
+$router->map('GET', '/machines', function() use ($articleController) {
+    $articleController->category('machines');
+});
+
+$router->map('GET', '/vetements', function() use ($articleController) {
+    $articleController->category('vetements');
+});
+
+$router->map('GET', '/vetements-hommes', function() use ($articleController) {
+    $articleController->category('vetements-hommes');
+});
+
+$router->map('GET', '/vetements-femmes', function() use ($articleController) {
+    $articleController->category('vetements-femmes');
+});
+
+$router->map('GET', '/complements', function() use ($articleController) {
+    $articleController->category('complements');
+});
+
 $router->map('GET', '/article/[i:id]', function($id) use ($twig) {
     $db = Database::getInstance();
     $controller = new ArticleController($db, $twig);
