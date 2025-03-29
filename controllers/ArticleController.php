@@ -37,8 +37,6 @@ class ArticleController {
             exit;
         }
 
-
-        // Récupération des articles liés
         $relatedArticles = $this->articleModel->getRelatedArticles($article['category'], $article['id']);
 
         echo $this->twig->render('article.html.twig', [
