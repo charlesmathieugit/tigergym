@@ -40,26 +40,18 @@ class ArticleModel {
             error_log("=== Debug ArticleModel::getArticlesByCategory ===");
             error_log("Catégorie recherchée : '" . $category . "'");
 
-            // Vérifions d'abord toutes les catégories dans la base
-            $checkQuery = "SELECT DISTINCT category FROM articles";
-            $checkStmt = $this->db->query($checkQuery);
-            $categories = $checkStmt->fetchAll(PDO::FETCH_COLUMN);
-            error_log("Catégories existantes dans la BDD : " . implode("', '", $categories));
+            // Si c'est la catégorie 'vetements', on récupère les articles hommes et femmes
+            if ($category === 'vetements') {
+                $query = "SELECT * FROM articles WHERE category IN ('vetements-hommes', 'vetements-femmes') ORDER BY created_at DESC";
+                $stmt = $this->db->prepare($query);
+            } else {
+                $query = "SELECT * FROM articles WHERE category = :category ORDER BY created_at DESC";
+                $stmt = $this->db->prepare($query);
+                $stmt->bindParam(':category', $category, PDO::PARAM_STR);
+            }
 
-            // Comptons le nombre total d'articles
-            $countQuery = "SELECT COUNT(*) as total FROM articles";
-            $countStmt = $this->db->query($countQuery);
-            $total = $countStmt->fetch(PDO::FETCH_ASSOC)['total'];
-            error_log("Nombre total d'articles dans la BDD : " . $total);
-
-            // Maintenant notre requête principale
-            $query = "SELECT * FROM articles WHERE category = :category ORDER BY created_at DESC";
-            $stmt = $this->db->prepare($query);
-            $stmt->bindParam(':category', $category, PDO::PARAM_STR);
-            
-            // Debug de la requête avec la valeur réelle
-            $debugQuery = str_replace(':category', "'" . $category . "'", $query);
-            error_log("Requête SQL exécutée : " . $debugQuery);
+            // Debug de la requête
+            error_log("Requête SQL exécutée : " . $query);
             
             if (!$stmt->execute()) {
                 error_log("Erreur d'exécution : " . implode(", ", $stmt->errorInfo()));
@@ -67,17 +59,16 @@ class ArticleModel {
             }
 
             $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            error_log("Nombre d'articles trouvés pour '" . $category . "' : " . count($articles));
+            error_log("Nombre d'articles trouvés : " . count($articles));
 
             if (!empty($articles)) {
                 foreach ($articles as $article) {
-                    error_log("Article trouvé - ID: " . $article['id'] . 
-                             ", Nom: " . $article['name'] . 
-                             ", Catégorie exacte: '" . $article['category'] . "'");
+                    error_log("Article trouvé - ID: {$article['id']}, " .
+                             "Nom: {$article['name']}, " .
+                             "Catégorie: {$article['category']}");
                 }
             }
 
-            error_log("=== Fin Debug ===");
             return $articles;
 
         } catch (\PDOException $e) {

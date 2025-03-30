@@ -3,8 +3,9 @@ session_start();
 require 'vendor/autoload.php';
 
 use Controllers\HomeController;
-use Controllers\UserController;
+use Controllers\AuthController;
 use Controllers\ArticleController;
+use Controllers\UserController;
 use Database\Database;
 use Middlewares\AuthMiddleware;
 
@@ -28,36 +29,48 @@ $router->map('GET', '/', function () use ($twig) {
     $homeController->index();
 });
 
-// inscription
-$router->map('GET', '/inscription', function () use ($twig) {
+// Routes d'authentification
+$router->map('GET', '/connexion', function () {
     $db = Database::getInstance();
-    $userController = new UserController($db, $twig);
-    $userController->inscription();
+    $authController = new AuthController($db);
+    $authController->showLoginForm();
 });
 
-$router->map('POST', '/inscription', function () use ($twig) {
+$router->map('POST', '/connexion', function () {
     $db = Database::getInstance();
-    $userController = new UserController($db, $twig);
-    $userController->inscription(); 
+    $authController = new AuthController($db);
+    $authController->login();
 });
 
-// connection
-$router->map('GET', '/connection', function () use ($twig) {
+$router->map('GET', '/inscription', function () {
     $db = Database::getInstance();
-    $userController = new UserController($db, $twig);
-    $userController->index();
+    $authController = new AuthController($db);
+    $authController->showRegisterForm();
 });
 
-$router->map('GET', '/deconnection', function () use ($twig) {
+$router->map('POST', '/inscription', function () {
     $db = Database::getInstance();
-    $userController = new UserController($db, $twig);
-    $userController->deconnection();
+    $authController = new AuthController($db);
+    $authController->register();
 });
 
-$router->map('POST', '/connection', function () use ($twig) {
+$router->map('GET', '/deconnexion', function () {
     $db = Database::getInstance();
-    $userController = new UserController($db, $twig);
-    $userController->connection();
+    $authController = new AuthController($db);
+    $authController->logout();
+});
+
+// Routes des articles
+$router->map('GET', '/article/[i:id]', function ($id) use ($twig) {
+    $db = Database::getInstance();
+    $articleController = new ArticleController($db, $twig);
+    $articleController->show($id);
+});
+
+$router->map('GET', '/categorie/[*:category]', function ($category) use ($twig) {
+    $db = Database::getInstance();
+    $articleController = new ArticleController($db, $twig);
+    $articleController->category($category);
 });
 
 // route Admin
@@ -92,25 +105,18 @@ $router->map('GET', '/complements', function() use ($articleController) {
     $articleController->category('complements');
 });
 
-$router->map('GET', '/article/[i:id]', function($id) use ($twig) {
-    $db = Database::getInstance();
-    $controller = new ArticleController($db, $twig);
-    $controller->show($id);
-});
-
 $router->map('GET', '/categories/[*:category]', function($category) use ($twig) {
     $db = Database::getInstance();
     $controller = new ArticleController($db, $twig);
     $controller->category($category);
 });
 
-// Matcher et gérer la requête
+// Gérer la route actuelle
 $match = $router->match();
 
-if (is_array($match) && is_callable($match['target'])) {
+if ($match) {
     call_user_func_array($match['target'], $match['params']);
 } else {
-    // Page 404
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    echo $twig->render('404.html.twig');
+    echo "Page non trouvée";
 }

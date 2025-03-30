@@ -28,10 +28,6 @@
                         <i class="fas fa-female"></i>
                         Femme
                     </button>
-                    <button class="filter-btn" data-filter="accessoires">
-                        <i class="fas fa-tshirt"></i>
-                        Accessoires
-                    </button>
                 </div>
                 <div class="sort-group">
                     <select class="sort-select">
@@ -49,11 +45,11 @@
     <section class="products-section">
         <div class="section-header">
             <h2 class="section-title">Nos {{ displayCategory }}</h2>
-            <p class="section-subtitle">Confort et Style pour vos Performances</p>
+            <p class="section-subtitle">Une sélection complète pour hommes et femmes</p>
         </div>
         <div class="products-grid">
             {% for article in articles %}
-                <article class="product-card">
+                <article class="product-card" data-category="{{ article.category == 'vetements-hommes' ? 'homme' : 'femme' }}">
                     {% if article.image %}
                         <img src="{{ article.image }}" alt="{{ article.name }}" class="product-image">
                     {% else %}
@@ -65,75 +61,74 @@
                     {% endif %}
                     <div class="product-overlay"></div>
                     <div class="product-content">
-                        <span class="product-category">{{ article.subcategory|default('Vêtement')|title }}</span>
+                        <span class="product-category">{{ article.category == 'vetements-hommes' ? 'Homme' : 'Femme' }}</span>
                         <h3 class="product-title">{{ article.name }}</h3>
                         <p class="product-description">{{ article.description|length > 100 ? article.description|slice(0, 100) ~ '...' : article.description }}</p>
                         <div class="product-meta">
                             <span class="product-price">{{ article.price }} €</span>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
+                            {% if article.stock > 0 %}
+                                <span class="stock in-stock">En stock</span>
+                            {% else %}
+                                <span class="stock out-of-stock">Rupture de stock</span>
+                            {% endif %}
                         </div>
                         <a href="/tigergym/article/{{ article.id }}" class="product-action">Voir le produit</a>
                     </div>
                 </article>
+            {% else %}
+                <div class="no-products">
+                    <p>Aucun vêtement disponible pour le moment.</p>
+                </div>
             {% endfor %}
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>Guide des Tailles</h2>
-            <p>Trouvez la taille parfaite pour vos vêtements de sport</p>
-            <a href="/tigergym/guide-tailles" class="cta-button">
-                <i class="fas fa-ruler"></i>
-                Voir le guide
-            </a>
-        </div>
-    </section>
-{% endblock %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Gestion des filtres
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const products = document.querySelectorAll('.product-card');
+        
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Retirer la classe active de tous les boutons
+                filterBtns.forEach(b => b.classList.remove('active'));
+                // Ajouter la classe active au bouton cliqué
+                this.classList.add('active');
+                
+                const filter = this.getAttribute('data-filter');
+                
+                products.forEach(product => {
+                    if (filter === 'all' || product.getAttribute('data-category') === filter) {
+                        product.style.display = 'block';
+                    } else {
+                        product.style.display = 'none';
+                    }
+                });
+            });
+        });
 
-{% block javascripts %}
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Gestion des filtres
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    filterBtns.forEach(btn => {
-        btn.addEventListener('click', function() {
-            filterBtns.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
+        // Gestion du tri
+        const sortSelect = document.querySelector('.sort-select');
+        sortSelect.addEventListener('change', function() {
+            const value = this.value;
+            const productsArray = Array.from(products);
+            
+            productsArray.sort((a, b) => {
+                const priceA = parseFloat(a.querySelector('.product-price').textContent);
+                const priceB = parseFloat(b.querySelector('.product-price').textContent);
+                
+                if (value === 'price-asc') {
+                    return priceA - priceB;
+                } else if (value === 'price-desc') {
+                    return priceB - priceA;
+                }
+                return 0;
+            });
+            
+            const container = document.querySelector('.products-grid');
+            productsArray.forEach(product => container.appendChild(product));
         });
     });
-
-    // Animation au scroll
-    const animateOnScroll = () => {
-        const products = document.querySelectorAll('.product-card');
-        products.forEach((product, index) => {
-            if (isElementInViewport(product)) {
-                setTimeout(() => {
-                    product.classList.add('animate');
-                }, index * 100);
-            }
-        });
-    };
-
-    window.addEventListener('scroll', animateOnScroll);
-    animateOnScroll();
-});
-
-function isElementInViewport(el) {
-    const rect = el.getBoundingClientRect();
-    return (
-        rect.top >= 0 &&
-        rect.left >= 0 &&
-        rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
-        rect.right <= (window.innerWidth || document.documentElement.clientWidth)
-    );
-}
-</script>
+    </script>
 {% endblock %}

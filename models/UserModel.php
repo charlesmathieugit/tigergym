@@ -11,49 +11,122 @@ class UserModel extends Model
     }
 
     /**
-     * Inscrire un utilisateur.
-     *
-     * @param string $username
-     * @param string $email
-     * @param string $password
-     * @return int|null L'ID de l'utilisateur créé ou null en cas d'échec.
+     * Récupérer un utilisateur par son email
      */
-    public function get_user_by_mail(string $mail,bool $fetchAsObject = true){
-
-        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE mail = :mail");
-        $stmt->execute([':mail' => $mail]);
+    public function getUserByEmail(string $email, bool $fetchAsObject = true)
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE email = :email");
+        $stmt->execute([':email' => $email]);
         return $fetchAsObject ? $stmt->fetch(PDO::FETCH_OBJ) : $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-
-    public function get_user_by_id(string $id,bool $fetchAsObject = true){
-
+    /**
+     * Récupérer un utilisateur par son ID
+     */
+    public function getUserById(string $id, bool $fetchAsObject = true)
+    {
         $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE id = :id");
         $stmt->execute([':id' => $id]);
         return $fetchAsObject ? $stmt->fetch(PDO::FETCH_OBJ) : $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function get_user_admin(){
-        $stmt = $this->db->query("SELECT * FROM {$this->table} WHERE role = 1");
+    /**
+     * Récupérer tous les administrateurs
+     */
+    public function getAdminUsers()
+    {
+        $stmt = $this->db->prepare("SELECT * FROM {$this->table} WHERE role = 'admin'");
+        $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_OBJ);
     }
-    public function register(string $username, string $email, string $password): ?int
-    {
-        // Hashage du mot de passe avant l'insertion
-        $hashedPassword = password_hash($password, PASSWORD_BCRYPT);
 
-        return $this->create(['username', 'mail', 'pass'], $username, $email, $hashedPassword);
+    /**
+     * Inscrire un nouvel utilisateur
+     */
+    public function register(array $userData)
+    {
+        if ($this->getUserByEmail($userData['email'])) {
+            return false;
+        }
+
+        $hashedPassword = password_hash($userData['password'], PASSWORD_BCRYPT);
+        
+        $columns = ['email', 'password', 'firstname', 'lastname', 'role', 'created_at'];
+        $values = [
+            $userData['email'],
+            $hashedPassword,
+            $userData['firstname'],
+            $userData['lastname'],
+            'user',
+            date('Y-m-d H:i:s')
+        ];
+        
+        return $this->create($columns, ...$values);
     }
 
-    public function connection(string $email, string $password): ?int
-    {   
+    /**
+     * Authentifier un utilisateur
+     */
+    public function authenticate(string $email, string $password)
+    {
+        $user = $this->getUserByEmail($email);
         
-       $user = $this->get_user_by_mail($email,true);
-       ;
-       if(password_verify($password, $user->pass) ){
-        return 1;
-       }else{
-        return 0;
-       }
+        if (!$user) {
+            return false;
+        }
+
+        if (password_verify($password, $user->password)) {
+            // Créer la session
+            $_SESSION['user'] = [
+                'id' => $user->id,
+                'email' => $user->email,
+                'firstname' => $user->firstname,
+                'lastname' => $user->lastname,
+                'role' => $user->role
+            ];
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Mettre à jour un utilisateur
+     */
+    public function updateUser(int $userId, array $userData)
+    {
+        $updates = [];
+        $params = [':id' => $userId];
+
+        // Construire la requête dynamiquement
+        foreach (['firstname', 'lastname', 'email'] as $field) {
+            if (isset($userData[$field])) {
+                $updates[] = "{$field} = :{$field}";
+                $params[":{$field}"] = $userData[$field];
+            }
+        }
+
+        // Gérer le mot de passe séparément
+        if (!empty($userData['password'])) {
+            $updates[] = "password = :password";
+            $params[':password'] = password_hash($userData['password'], PASSWORD_BCRYPT);
+        }
+
+        if (empty($updates)) {
+            return false;
+        }
+
+        $query = "UPDATE {$this->table} SET " . implode(', ', $updates) . " WHERE id = :id";
+        $stmt = $this->db->prepare($query);
+        return $stmt->execute($params);
+    }
+
+    /**
+     * Vérifier si un utilisateur est admin
+     */
+    public function isAdmin($userId)
+    {
+        $user = $this->getUserById($userId);
+        return $user && $user->role === 'admin';
     }
 }

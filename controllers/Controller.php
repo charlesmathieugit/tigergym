@@ -6,25 +6,30 @@ use PDO;
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
-class Controller
+abstract class Controller
 {
-    protected Environment $twig;
-    protected PDO $db;
+    protected $db;
+    protected $twig;
 
-    public function __construct(PDO $database)
+    public function __construct(PDO $db)
     {
-        $this->db = $database;
-
-        // Initialisation de Twig
+        $this->db = $db;
+        
         $loader = new FilesystemLoader(__DIR__ . '/../views');
         $this->twig = new Environment($loader, [
-            'debug' => true, // Active le mode debug
-            'cache' => false, // Désactive le cache pendant le développement
+            'debug' => true,
+            'cache' => false
+        ]);
+        
+        // Ajouter une variable globale pour l'état de connexion
+        $this->twig->addGlobal('user', [
+            'is_logged_in' => isset($_SESSION['user_id']),
+            'id' => $_SESSION['user_id'] ?? null,
+            'email' => $_SESSION['user_email'] ?? null
         ]);
     }
 
-    public function render(string $template, array $data = [])
-    {
+    protected function render(string $template, array $data = []): string {
         try {
             echo $this->twig->render($template, $data);
         } catch (\Twig\Error\Error $e) {
@@ -33,21 +38,15 @@ class Controller
         }
     }
 
-    
-    public function setSession(string $key, $value): void
-    {
+    public function setSession(string $key, $value): void {
         $_SESSION[$key] = $value;
     }
 
-    public function getSession(string $key, $default = null)
-    {
-        return $_SESSION[$key] ?? $default;
+    public function getSession(string $key) {
+        return $_SESSION[$key] ?? null;
     }
 
-    public function deleteSession(string $key): void
-    {
+    public function unsetSession(string $key): void {
         unset($_SESSION[$key]);
     }
-
-
 }

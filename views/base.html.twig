@@ -22,14 +22,24 @@
             <div class="dropdown">
                 <a href="#" class="{{ app.request.pathInfo starts with '/tigergym/vetements' ? 'active' : '' }}">Vêtements <i class="fas fa-chevron-down"></i></a>
                 <div class="dropdown-content">
+                    <a href="/tigergym/vetements" class="{{ app.request.pathInfo == '/tigergym/vetements' ? 'active' : '' }}">Tous les vêtements</a>
                     <a href="/tigergym/vetements-hommes" class="{{ app.request.pathInfo == '/tigergym/vetements-hommes' ? 'active' : '' }}">Hommes</a>
                     <a href="/tigergym/vetements-femmes" class="{{ app.request.pathInfo == '/tigergym/vetements-femmes' ? 'active' : '' }}">Femmes</a>
-                    <a href="/tigergym/vetements" class="{{ app.request.pathInfo == '/tigergym/vetements' ? 'active' : '' }}">Tous les vêtements</a>
                 </div>
             </div>
             <a href="/tigergym/complements" class="{{ app.request.pathInfo == '/tigergym/complements' ? 'active' : '' }}">Compléments</a>
             <a href="/tigergym/contact" class="{{ app.request.pathInfo == '/tigergym/contact' ? 'active' : '' }}">Contact</a>
-            <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">Connexion</a>
+            {% if user.is_logged_in %}
+                <a href="/tigergym/deconnexion" class="nav-logout">
+                    <i class="fas fa-sign-out-alt"></i>
+                    Déconnexion
+                </a>
+            {% else %}
+                <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">
+                    <i class="fas fa-sign-in-alt"></i>
+                    Connexion
+                </a>
+            {% endif %}
         </div>
         <div class="nav-actions">
             <a href="/tigergym/recherche" class="search-btn">

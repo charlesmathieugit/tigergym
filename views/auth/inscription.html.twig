@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="auth-page">
+    <div class="auth-container">
+        <div class="auth-visual">
+            <div class="auth-visual-content">
+                <h1>{{ h1 }}</h1>
+                <p>Rejoignez la communauté TigerGym dès aujourd'hui et accédez à notre sélection exclusive de matériel sportif de qualité.</p>
+            </div>
+        </div>
+        
+        <div class="auth-form-container">
+            <div class="auth-nav">
+                <a href="/tigergym/connexion" class="auth-nav-btn">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <span>Connexion</span>
+                </a>
+                <button class="auth-nav-btn active">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Inscription</span>
+                </button>
+            </div>
+
+            {% if error %}
+                <div class="alert">
+                    <i class="fas fa-exclamation-circle"></i>
+                    <span class="alert-text">{{ error }}</span>
+                </div>
+            {% endif %}
+
+            <form method="POST" action="/tigergym/inscription" class="auth-form">
+                <div class="form-group">
+                    <label for="username">
+                        <i class="fas fa-user"></i>
+                        Nom d'utilisateur
+                    </label>
+                    <input type="text" id="username" name="username" required 
+                           placeholder="Choisissez un nom d'utilisateur">
+                </div>
+
+                <div class="form-group">
+                    <label for="mail">
+                        <i class="fas fa-envelope"></i>
+                        Email
+                    </label>
+                    <input type="email" id="mail" name="mail" required 
+                           placeholder="Votre adresse email">
+                </div>
+
+                <div class="form-group">
+                    <label for="pass">
+                        <i class="fas fa-lock"></i>
+                        Mot de passe
+                    </label>
+                    <input type="password" id="pass" name="pass" required
+                           placeholder="Choisissez un mot de passe">
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-user-plus"></i>
+                    Créer mon compte
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
