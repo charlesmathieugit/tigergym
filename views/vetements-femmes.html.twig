@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ displayCategory }} - TigerGym{% endblock %}
+{% block title %}Vêtements Femme - TigerGym{% endblock %}
 
 {% block content %}
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>{{ displayCategory }}</h1>
-            <p class="hero-subtitle">Élégance et Performance au Féminin</p>
+            <h1>Vêtements<br>Femme</h1>
+            <p class="hero-subtitle">Style et Performance pour vos Entraînements</p>
         </div>
     </section>
 
@@ -70,15 +70,16 @@
                         <p class="product-description">{{ article.description|length > 100 ? article.description|slice(0, 100) ~ '...' : article.description }}</p>
                         <div class="product-meta">
                             <span class="product-price">{{ article.price }} €</span>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
+                            {% if article.stock > 0 %}
+                                <span class="stock in-stock">En stock</span>
+                            {% else %}
+                                <span class="stock out-of-stock">Rupture de stock</span>
+                            {% endif %}
                         </div>
-                        <a href="/tigergym/article/{{ article.id }}" class="product-action">Voir le produit</a>
+                        <a href="/tigergym/article/{{ article.id }}" class="product-link">
+                            <i class="fas fa-eye"></i>
+                            Voir le produit
+                        </a>
                     </div>
                 </article>
             {% endfor %}

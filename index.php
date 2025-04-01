@@ -6,6 +6,8 @@ use Controllers\HomeController;
 use Controllers\AuthController;
 use Controllers\ArticleController;
 use Controllers\UserController;
+use Controllers\RatingController;
+use Controllers\CommentsController;
 use Database\Database;
 use Middlewares\AuthMiddleware;
 
@@ -30,27 +32,27 @@ $router->map('GET', '/', function () use ($twig) {
 });
 
 // Routes d'authentification
-$router->map('GET', '/connexion', function () {
+$router->map('GET', '/connexion', function () use ($twig) {
     $db = Database::getInstance();
-    $authController = new AuthController($db);
+    $authController = new AuthController($db, $twig);
     $authController->showLoginForm();
 });
 
-$router->map('POST', '/connexion', function () {
+$router->map('POST', '/connexion', function () use ($twig) {
     $db = Database::getInstance();
-    $authController = new AuthController($db);
+    $authController = new AuthController($db, $twig);
     $authController->login();
 });
 
-$router->map('GET', '/inscription', function () {
+$router->map('GET', '/inscription', function () use ($twig) {
     $db = Database::getInstance();
-    $authController = new AuthController($db);
+    $authController = new AuthController($db, $twig);
     $authController->showRegisterForm();
 });
 
-$router->map('POST', '/inscription', function () {
+$router->map('POST', '/inscription', function () use ($twig) {
     $db = Database::getInstance();
-    $authController = new AuthController($db);
+    $authController = new AuthController($db, $twig);
     $authController->register();
 });
 
@@ -109,6 +111,29 @@ $router->map('GET', '/categories/[*:category]', function($category) use ($twig) 
     $db = Database::getInstance();
     $controller = new ArticleController($db, $twig);
     $controller->category($category);
+});
+
+// Routes pour les commentaires
+$router->map('POST', '/comments/add', function() use ($db, $twig) {
+    $controller = new CommentsController($db, $twig);
+    $controller->add();
+});
+
+$router->map('POST', '/comments/update', function() use ($db, $twig) {
+    $controller = new CommentsController($db, $twig);
+    $controller->update();
+});
+
+$router->map('POST', '/comments/delete', function() use ($db, $twig) {
+    $controller = new CommentsController($db, $twig);
+    $controller->delete();
+});
+
+// Route pour la notation
+$router->map('POST', '/ratings/rate', function () use ($twig) {
+    $db = Database::getInstance();
+    $ratingController = new RatingController($db, $twig);
+    $ratingController->rate();
 });
 
 // Gérer la route actuelle

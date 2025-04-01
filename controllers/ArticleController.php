@@ -2,11 +2,14 @@
 
 namespace Controllers;
 
+use Controllers\Controller;
 use Models\ArticleModel;
+use Controllers\RatingController;
+use Controllers\CommentsController;
+use PDO;
 use Twig\Environment;
 
-class ArticleController {
-    private $twig;
+class ArticleController extends Controller {
     private $articleModel;
     private $categoryMapping = [
         'machines' => 'Machines',
@@ -24,30 +27,64 @@ class ArticleController {
         'complements' => 'complements.html.twig'
     ];
 
-    public function __construct($db, Environment $twig) {
-        $this->twig = $twig;
+    public function __construct(PDO $db, Environment $twig = null) {
+        parent::__construct($db, $twig);
         $this->articleModel = new ArticleModel($db);
     }
 
     public function show($id) {
-        $article = $this->articleModel->getArticleById($id);
-        
+        // Récupérer l'article
+        $stmt = $this->db->prepare("
+            SELECT * FROM articles WHERE id = :id
+        ");
+        $stmt->execute(['id' => $id]);
+        $article = $stmt->fetch(\PDO::FETCH_ASSOC);
+
         if (!$article) {
-            header('Location: /tigergym/');
-            exit;
+            http_response_code(404);
+            echo "Article non trouvé";
+            return;
         }
 
-        $relatedArticles = $this->articleModel->getRelatedArticles($article['category'], $article['id']);
+        // Récupérer les données de notation
+        $ratingController = new RatingController($this->db, $this->twig);
+        $ratingData = $ratingController->getArticleRatingData($id);
+        
+        error_log("=== Données de notation pour l'article $id ===");
+        error_log("Note moyenne: " . $ratingData['average_rating']);
+        error_log("Nombre de votes: " . $ratingData['rating_count']);
+        error_log("Note de l'utilisateur: " . ($ratingData['user_rating'] ?? 'non noté'));
+        
+        // Récupérer les commentaires
+        $commentController = new CommentsController($this->db, $this->twig);
+        $commentData = $commentController->getArticleCommentData($id);
 
-        echo $this->twig->render('article.html.twig', [
-            'article' => $article,
-            'relatedArticles' => $relatedArticles,
-            'app' => [
-                'request' => [
-                    'pathInfo' => '/tigergym/article/' . $id
-                ]
+        // Préparer les données utilisateur
+        $userData = [
+            'user' => [
+                'id' => $_SESSION['user_id'] ?? null,
+                'is_logged_in' => isset($_SESSION['user_id']),
+                'username' => $_SESSION['username'] ?? null
             ]
-        ]);
+        ];
+
+        // Fusionner toutes les données
+        $data = array_merge(
+            ['article' => array_merge($article, [
+                'average_rating' => $ratingData['average_rating'],
+                'rating_count' => $ratingData['rating_count'],
+                'user_rating' => $ratingData['user_rating'],
+                'comments' => $commentData['comments'] ?? [],
+                'comment_count' => $commentData['comment_count'] ?? 0
+            ])],
+            $userData
+        );
+
+        error_log("=== Données envoyées au template ===");
+        error_log(print_r($data, true));
+
+        // Rendre la vue
+        echo $this->twig->render('article.html.twig', $data);
     }
 
     public function category($category) {
@@ -84,15 +121,21 @@ class ArticleController {
         error_log("- displayCategory: " . $displayCategory);
         error_log("- articles: " . json_encode($articles));
 
+        // Préparer les données utilisateur
+        $userData = [
+            'id' => $_SESSION['user_id'] ?? null,
+            'is_logged_in' => isset($_SESSION['user_id']),
+            'username' => $_SESSION['username'] ?? null
+        ];
+
         try {
             echo $this->twig->render($template, [
-                'category' => $category,
-                'displayCategory' => $displayCategory,
                 'articles' => $articles,
+                'category' => $displayCategory,
+                'user' => $userData,
                 'app' => [
-                    'request' => [
-                        'pathInfo' => '/tigergym/' . $category
-                    ]
+                    'debug' => true,
+                    'user' => $userData
                 ]
             ]);
             error_log("=== Rendu de la vue réussi ===");

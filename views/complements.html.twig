@@ -1,13 +1,13 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ displayCategory }} - TigerGym{% endblock %}
+{% block title %}Compléments Alimentaires - TigerGym{% endblock %}
 
 {% block content %}
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>{{ displayCategory }}<br>Alimentaires</h1>
-            <p class="hero-subtitle">Optimisez vos Performances et votre Récupération</p>
+            <h1>Compléments<br>Alimentaires</h1>
+            <p class="hero-subtitle">Nutrition et Performance pour vos Objectifs</p>
         </div>
     </section>
 
@@ -48,7 +48,7 @@
     <!-- Products Grid Section -->
     <section class="products-section">
         <div class="section-header">
-            <h2 class="section-title">Nos {{ displayCategory }}</h2>
+            <h2 class="section-title">Nos Compléments</h2>
             <p class="section-subtitle">Des produits de qualité pour des résultats optimaux</p>
         </div>
         <div class="products-grid">
@@ -70,15 +70,16 @@
                         <p class="product-description">{{ article.description|length > 100 ? article.description|slice(0, 100) ~ '...' : article.description }}</p>
                         <div class="product-meta">
                             <span class="product-price">{{ article.price }} €</span>
-                            <div class="product-rating">
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star"></i>
-                                <i class="fas fa-star-half-alt"></i>
-                            </div>
+                            {% if article.stock > 0 %}
+                                <span class="stock in-stock">En stock</span>
+                            {% else %}
+                                <span class="stock out-of-stock">Rupture de stock</span>
+                            {% endif %}
                         </div>
-                        <a href="/tigergym/article/{{ article.id }}" class="product-action">Voir le produit</a>
+                        <a href="/tigergym/article/{{ article.id }}" class="product-link">
+                            <i class="fas fa-eye"></i>
+                            Voir le produit
+                        </a>
                     </div>
                 </article>
             {% endfor %}

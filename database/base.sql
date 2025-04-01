@@ -14,6 +14,37 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
+-- Création de la table comments
+CREATE TABLE IF NOT EXISTS `comments` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `article_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `content` text NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `article_id` (`article_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `comments_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Création de la table ratings
+CREATE TABLE IF NOT EXISTS `ratings` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `article_id` int NOT NULL,
+  `user_id` int NOT NULL,
+  `rating` tinyint NOT NULL,
+  `created_at` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `article_user` (`article_id`,`user_id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `ratings_ibfk_1` FOREIGN KEY (`article_id`) REFERENCES `articles` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `ratings_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `ratings_rating_check` CHECK ((`rating` between 1 and 5))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Listage des données de la table tigergym.articles : ~12 rows (environ)
 DELETE FROM `articles`;
 INSERT INTO `articles` (`id`, `name`, `description`, `price`, `image`, `category`, `stock`, `size_available`, `created_at`, `updated_at`) VALUES
@@ -36,19 +67,14 @@ DELETE FROM `comments`;
 -- Listage des données de la table tigergym.ratings : ~0 rows (environ)
 DELETE FROM `ratings`;
 
--- Listage des données de la table tigergym.users : ~0 rows (environ)
+-- Listage des données de la table tigergym.users : ~2 rows (environ)
 DELETE FROM `users`;
 INSERT INTO `users` (`id`, `email`, `password`, `firstname`, `lastname`, `address`, `phone`, `role`, `created_at`) VALUES
-	(1, 'admin@tigergym.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'TigerGym', NULL, NULL, 'admin', '2025-03-22 09:22:26');
+	(1, 'admin@tigergym.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'Admin', 'TigerGym', NULL, NULL, 'admin', '2025-03-22 09:22:26'),
+	(2, 'login@test.com', '$2y$10$yP4Cv9acKMeEyH8yu2yKU.9gaqn8eI7n0fD4OZuFIBgCpSTXPL8qK', 'Charles', 'Mathieu', NULL, NULL, 'user', '2025-03-30 17:29:49');
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;
 /*!40101 SET SQL_MODE=IFNULL(@OLD_SQL_MODE, '') */;
 /*!40014 SET FOREIGN_KEY_CHECKS=IFNULL(@OLD_FOREIGN_KEY_CHECKS, 1) */;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40111 SET SQL_NOTES=IFNULL(@OLD_SQL_NOTES, 1) */;
-(1, 'T-Shirt Performance', '...', 'vetements-hommes', ...),
-(2, 'Short Training', '...', 'vetements-hommes', ...),
-(3, 'Débardeur Muscle', '...', 'vetements-hommes', ...),
-(4, 'Legging Fitness', '...', 'vetements-femmes', ...),
-(5, 'Brassière Sport Pro', '...', 'vetements-femmes', ...),
-(6, 'Top Training', '...', 'vetements-femmes', ...)

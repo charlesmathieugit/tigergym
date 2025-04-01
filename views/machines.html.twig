@@ -1,12 +1,12 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ displayCategory }} - TigerGym{% endblock %}
+{% block title %}Nos Machines de Fitness - TigerGym{% endblock %}
 
 {% block content %}
     <!-- Hero Section -->
     <section class="hero">
         <div class="hero-content">
-            <h1>{{ displayCategory }}<br>de Fitness</h1>
+            <h1>Nos Machines<br>de Fitness</h1>
             <p class="hero-subtitle">Équipement Professionnel pour votre Salle</p>
         </div>
     </section>
@@ -48,7 +48,7 @@
     <!-- Products Grid Section -->
     <section class="products-section">
         <div class="section-header">
-            <h2 class="section-title">Nos {{ displayCategory }}</h2>
+            <h2 class="section-title">Nos Machines de Fitness</h2>
             <p class="section-subtitle">Équipement Professionnel pour des Résultats Optimaux</p>
         </div>
         <div class="products-grid">
@@ -78,7 +78,10 @@
                                 <i class="fas fa-star-half-alt"></i>
                             </div>
                         </div>
-                        <a href="/tigergym/article/{{ article.id }}" class="product-action">Voir le produit</a>
+                        <a href="/tigergym/article/{{ article.id }}" class="product-link">
+                            <i class="fas fa-eye"></i>
+                            Voir le produit
+                        </a>
                     </div>
                 </article>
             {% endfor %}
