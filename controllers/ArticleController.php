@@ -145,4 +145,80 @@ class ArticleController extends Controller {
             throw $e;
         }
     }
+
+    // Méthodes d'administration
+    public function adminIndex() {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /tigergym/login');
+            exit;
+        }
+
+        $articles = $this->articleModel->getAllArticles();
+        echo $this->twig->render('admin/articles.html.twig', ['articles' => $articles]);
+    }
+
+    public function adminNew() {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /tigergym/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->saveArticle($_POST);
+            header('Location: /tigergym/admin/articles');
+            exit;
+        }
+
+        echo $this->twig->render('admin/article-form.html.twig', ['article' => null]);
+    }
+
+    public function adminEdit($id) {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /tigergym/login');
+            exit;
+        }
+
+        $article = $this->articleModel->getArticleById($id);
+        if (!$article) {
+            header('Location: /tigergym/admin/articles');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $this->saveArticle(array_merge($_POST, ['id' => $id]));
+            header('Location: /tigergym/admin/articles');
+            exit;
+        }
+
+        echo $this->twig->render('admin/article-form.html.twig', ['article' => $article]);
+    }
+
+    public function adminDelete($id) {
+        if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+            header('Location: /tigergym/login');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['_method']) && $_POST['_method'] === 'DELETE') {
+            $this->articleModel->deleteArticle($id);
+        }
+
+        header('Location: /tigergym/admin/articles');
+        exit;
+    }
+
+    private function saveArticle($data) {
+        $required = ['title', 'description', 'category', 'price', 'image_url', 'external_link'];
+        foreach ($required as $field) {
+            if (empty($data[$field])) {
+                throw new \Exception("Le champ $field est requis");
+            }
+        }
+
+        if (isset($data['id'])) {
+            $this->articleModel->updateArticle($data);
+        } else {
+            $this->articleModel->createArticle($data);
+        }
+    }
 }

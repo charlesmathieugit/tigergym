@@ -1,8 +1,8 @@
 <?php
 namespace Controllers;
 
-use Models\UserModel;
 use PDO;
+use Models\UserModel;
 use Twig\Environment;
 
 class AuthController extends Controller {
@@ -14,14 +14,17 @@ class AuthController extends Controller {
     }
 
     public function showLoginForm() {
-        echo $this->render('auth/connection.html.twig', [
+        if (isset($_SESSION['user_id'])) {
+            $this->redirectBasedOnRole();
+            exit;
+        }
+
+        echo $this->twig->render('auth/connection.html.twig', [
             'title' => 'Connexion - TigerGym',
             'h1' => 'Connexion',
-            'error' => $_SESSION['error'] ?? null
+            'error' => $_SESSION['login_error'] ?? null
         ]);
-        
-        // Effacer le message d'erreur après l'avoir affiché
-        unset($_SESSION['error']);
+        unset($_SESSION['login_error']);
     }
 
     public function login() {
@@ -29,29 +32,61 @@ class AuthController extends Controller {
             $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
             $password = $_POST['password'] ?? '';
 
-            if (empty($email) || empty($password)) {
-                $_SESSION['error'] = 'Veuillez remplir tous les champs';
-                header('Location: /tigergym/connexion');
-                exit();
-            }
+            try {
+                $user = $this->userModel->getUserByEmail($email);
 
-            if ($user = $this->userModel->authenticate($email, $password)) {
-                $_SESSION['user_id'] = $user['id'];
-                $_SESSION['user_email'] = $user['email'];
-                $_SESSION['is_logged_in'] = true;
-                unset($_SESSION['error']);
-                header('Location: /tigergym');
-                exit();
-            } else {
-                $_SESSION['error'] = 'Email ou mot de passe incorrect';
+                if ($user && password_verify($password, $user['password'])) {
+                    // Debug - Afficher les informations de l'utilisateur
+                    error_log("=== Connexion réussie ===");
+                    error_log("User ID: " . $user['id']);
+                    error_log("Username: " . $user['username']);
+                    error_log("Role: " . $user['role']);
+
+                    $_SESSION['user_id'] = $user['id'];
+                    $_SESSION['username'] = $user['username'];
+                    $_SESSION['role'] = $user['role'];
+                    $_SESSION['is_logged_in'] = true;
+
+                    // Debug - Vérifier les variables de session
+                    error_log("=== Variables de session après connexion ===");
+                    error_log("Session user_id: " . $_SESSION['user_id']);
+                    error_log("Session username: " . $_SESSION['username']);
+                    error_log("Session role: " . $_SESSION['role']);
+                    error_log("Session is_logged_in: " . $_SESSION['is_logged_in']);
+
+                    // Redirection basée sur le rôle
+                    if ($user['role'] === 'admin') {
+                        header('Location: /tigergym/admin/articles');
+                    } else {
+                        header('Location: /tigergym/');
+                    }
+                    exit;
+                } else {
+                    throw new \Exception('Email ou mot de passe incorrect');
+                }
+            } catch (\Exception $e) {
+                $_SESSION['login_error'] = $e->getMessage();
                 header('Location: /tigergym/connexion');
-                exit();
+                exit;
             }
+        }
+
+        echo $this->twig->render('auth/connection.html.twig', [
+            'error' => $_SESSION['login_error'] ?? null
+        ]);
+        unset($_SESSION['login_error']);
+    }
+
+    private function redirectBasedOnRole() {
+        if ($_SESSION['role'] === 'admin') {
+            header('Location: /tigergym/admin/articles');
+        } else {
+            header('Location: /tigergym/');
         }
     }
 
     public function showRegisterForm() {
-        echo $this->render('auth/inscription.html.twig', [
+        echo $this->twig->render('auth/inscription.html.twig', [
             'title' => 'Inscription - TigerGym',
             'h1' => 'Inscription',
             'error' => $_SESSION['error'] ?? null
@@ -85,8 +120,11 @@ class AuthController extends Controller {
                 exit();
             }
 
-            // Créer l'utilisateur
-            if ($this->userModel->register($email, $password, $username)) {
+            // Créer l'utilisateur avec le rôle admin si c'est le premier utilisateur
+            $isFirstUser = !$this->userModel->hasUsers();
+            $role = $isFirstUser ? 'admin' : 'user';
+
+            if ($this->userModel->register($email, $password, $username, $role)) {
                 $_SESSION['success'] = 'Inscription réussie ! Vous pouvez maintenant vous connecter.';
                 header('Location: /tigergym/connexion');
                 exit();

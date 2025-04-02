@@ -12,7 +12,6 @@ class ArticleModel {
     }
 
     public function getFeaturedArticles() {
-        // On prend les 6 premiers articles de la catégorie 'machines' comme articles à la une
         $query = "SELECT * FROM articles WHERE category = 'machines' ORDER BY created_at DESC LIMIT 6";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
@@ -20,7 +19,6 @@ class ArticleModel {
     }
 
     public function getLatestArticles() {
-        // On exclut les articles déjà affichés dans la section featured
         $query = "SELECT * FROM articles WHERE category != 'machines' ORDER BY created_at DESC LIMIT 12";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
@@ -37,10 +35,6 @@ class ArticleModel {
 
     public function getArticlesByCategory($category) {
         try {
-            error_log("=== Debug ArticleModel::getArticlesByCategory ===");
-            error_log("Catégorie recherchée : '" . $category . "'");
-
-            // Si c'est la catégorie 'vetements', on récupère les articles hommes et femmes
             if ($category === 'vetements') {
                 $query = "SELECT * FROM articles WHERE category IN ('vetements-hommes', 'vetements-femmes') ORDER BY created_at DESC";
                 $stmt = $this->db->prepare($query);
@@ -49,27 +43,9 @@ class ArticleModel {
                 $stmt = $this->db->prepare($query);
                 $stmt->bindParam(':category', $category, PDO::PARAM_STR);
             }
-
-            // Debug de la requête
-            error_log("Requête SQL exécutée : " . $query);
             
-            if (!$stmt->execute()) {
-                error_log("Erreur d'exécution : " . implode(", ", $stmt->errorInfo()));
-                return [];
-            }
-
-            $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
-            error_log("Nombre d'articles trouvés : " . count($articles));
-
-            if (!empty($articles)) {
-                foreach ($articles as $article) {
-                    error_log("Article trouvé - ID: {$article['id']}, " .
-                             "Nom: {$article['name']}, " .
-                             "Catégorie: {$article['category']}");
-                }
-            }
-
-            return $articles;
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         } catch (\PDOException $e) {
             error_log("Erreur PDO : " . $e->getMessage());
@@ -85,5 +61,93 @@ class ArticleModel {
         $stmt->bindParam(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    // Méthodes d'administration
+    public function getAllArticles() {
+        $query = "SELECT * FROM articles ORDER BY created_at DESC";
+        $stmt = $this->db->prepare($query);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function createArticle($data) {
+        try {
+            $query = "INSERT INTO articles (title, description, category, price, image_url, external_link, created_at) 
+                     VALUES (:title, :description, :category, :price, :image_url, :external_link, NOW())";
+            
+            $stmt = $this->db->prepare($query);
+            $success = $stmt->execute([
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'category' => $data['category'],
+                'price' => $data['price'],
+                'image_url' => $data['image_url'],
+                'external_link' => $data['external_link']
+            ]);
+
+            if (!$success) {
+                throw new \Exception("Erreur lors de la création de l'article");
+            }
+
+            return $this->db->lastInsertId();
+
+        } catch (\Exception $e) {
+            error_log("Erreur création article : " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function updateArticle($id, $data) {
+        try {
+            $query = "UPDATE articles 
+                     SET title = :title, 
+                         description = :description, 
+                         category = :category, 
+                         price = :price, 
+                         image_url = :image_url, 
+                         external_link = :external_link,
+                         updated_at = NOW()
+                     WHERE id = :id";
+            
+            $stmt = $this->db->prepare($query);
+            $success = $stmt->execute([
+                'id' => $id,
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'category' => $data['category'],
+                'price' => $data['price'],
+                'image_url' => $data['image_url'],
+                'external_link' => $data['external_link']
+            ]);
+
+            if (!$success) {
+                throw new \Exception("Erreur lors de la mise à jour de l'article");
+            }
+
+            return true;
+
+        } catch (\Exception $e) {
+            error_log("Erreur mise à jour article : " . $e->getMessage());
+            throw $e;
+        }
+    }
+
+    public function deleteArticle($id) {
+        try {
+            $query = "DELETE FROM articles WHERE id = :id";
+            $stmt = $this->db->prepare($query);
+            $success = $stmt->execute(['id' => $id]);
+
+            if (!$success) {
+                throw new \Exception("Erreur lors de la suppression de l'article");
+            }
+
+            return true;
+
+        } catch (\Exception $e) {
+            error_log("Erreur suppression article : " . $e->getMessage());
+            throw $e;
+        }
     }
 }

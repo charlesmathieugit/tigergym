@@ -29,10 +29,16 @@
             </div>
             <a href="/tigergym/complements" class="{{ app.request.pathInfo == '/tigergym/complements' ? 'active' : '' }}">Compléments</a>
             <a href="/tigergym/contact" class="{{ app.request.pathInfo == '/tigergym/contact' ? 'active' : '' }}">Contact</a>
-            {% if user.is_logged_in %}
+            {% if user is defined and user.is_logged_in %}
+                {% if user is defined and user.role == 'admin' %}
+                    <a href="/tigergym/admin/articles" class="admin-link {{ app.request.pathInfo starts with '/tigergym/admin/articles' ? 'active' : '' }}">
+                        <i class="fas fa-cog"></i>
+                        Administration
+                    </a>
+                {% endif %}
                 <a href="/tigergym/deconnexion" class="nav-logout">
                     <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion
+                    Déconnexion ({{ user.username }})
                 </a>
             {% else %}
                 <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">

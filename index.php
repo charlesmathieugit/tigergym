@@ -8,6 +8,8 @@ use Controllers\ArticleController;
 use Controllers\UserController;
 use Controllers\RatingController;
 use Controllers\CommentsController;
+use Controllers\AdminArticleController;
+use Controllers\AdminDashboardController;
 use Database\Database;
 use Middlewares\AuthMiddleware;
 
@@ -83,6 +85,13 @@ $router->map('GET', '/admin', function () use ($twig) {
     $userController->admin();
 });
 
+// Route du tableau de bord admin
+$router->map('GET', '/admin/dashboard', function () use ($twig) {
+    $db = Database::getInstance();
+    $adminDashboardController = new AdminDashboardController($db, $twig);
+    $adminDashboardController->index();
+});
+
 // Routes pour les catégories
 $db = Database::getInstance();
 $articleController = new ArticleController($db, $twig);
@@ -136,12 +145,50 @@ $router->map('POST', '/ratings/rate', function () use ($twig) {
     $ratingController->rate();
 });
 
-// Gérer la route actuelle
+// Routes d'administration des articles
+$router->map('GET', '/admin/articles', function() use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->index();
+});
+
+$router->map('GET', '/admin/articles/nouveau', function() use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->showCreateForm();
+});
+
+$router->map('POST', '/admin/articles/nouveau', function() use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->create();
+});
+
+$router->map('GET', '/admin/articles/modifier/[i:id]', function($id) use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->showEditForm($id);
+});
+
+$router->map('POST', '/admin/articles/modifier/[i:id]', function($id) use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->update($id);
+});
+
+$router->map('POST', '/admin/articles/supprimer/[i:id]', function($id) use ($twig) {
+    $db = Database::getInstance();
+    $controller = new AdminArticleController($db, $twig);
+    $controller->delete($id);
+});
+
+// Matcher la route actuelle
 $match = $router->match();
 
-if ($match) {
+// Appeler la fonction de rappel correspondante
+if ($match && is_callable($match['target'])) {
     call_user_func_array($match['target'], $match['params']);
 } else {
     header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-    echo "Page non trouvée";
+    echo '404 Page Not Found';
 }

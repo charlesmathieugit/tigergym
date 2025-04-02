@@ -43,38 +43,29 @@ class UserModel {
         return null;
     }
 
-    public function register(string $email, string $password, string $username) {
+    public function register(string $email, string $password, string $username, string $role = 'user') {
         try {
             error_log("\n=== Tentative d'inscription ===");
             error_log("Email: " . $email);
             error_log("Username: " . $username);
             error_log("Password length: " . strlen($password));
             
-            // Vérifier si l'email existe déjà
-            $existingUser = $this->getUserByEmail($email);
-            if ($existingUser) {
-                error_log("ERREUR: Email déjà utilisé");
-                return false;
-            }
-            
+            // Hasher le mot de passe
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            error_log("Mot de passe hashé créé (length: " . strlen($hashedPassword) . ")");
             
-            $query = "INSERT INTO {$this->table} (email, password, username, created_at) VALUES (:email, :password, :username, NOW())";
-            error_log("Query: " . $query);
+            // Préparer et exécuter la requête
+            $stmt = $this->db->prepare("
+                INSERT INTO {$this->table} (email, password, username, role, created_at)
+                VALUES (:email, :password, :username, :role, NOW())
+            ");
             
-            $stmt = $this->db->prepare($query);
-            error_log("Requête préparée");
-            
-            $params = [
+            $result = $stmt->execute([
                 'email' => $email,
                 'password' => $hashedPassword,
-                'username' => $username
-            ];
-            error_log("Paramètres: " . print_r($params, true));
-            
-            $result = $stmt->execute($params);
-            
+                'username' => $username,
+                'role' => $role
+            ]);
+
             if ($result) {
                 error_log("Inscription réussie ! ID: " . $this->db->lastInsertId());
                 return true;
@@ -96,5 +87,10 @@ class UserModel {
             error_log("Trace: " . $e->getTraceAsString());
             return false;
         }
+    }
+
+    public function hasUsers() {
+        $stmt = $this->db->query("SELECT COUNT(*) FROM {$this->table}");
+        return $stmt->fetchColumn() > 0;
     }
 }
