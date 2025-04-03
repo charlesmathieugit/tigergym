@@ -39,18 +39,18 @@ CREATE TABLE IF NOT EXISTS `articles` (
 -- Listage des données de la table tigergym.articles : ~12 rows (environ)
 DELETE FROM `articles`;
 INSERT INTO `articles` (`id`, `name`, `description`, `price`, `image`, `category`, `stock`, `size_available`, `created_at`, `updated_at`) VALUES
-	(1, 'T-Shirt Performance', 'T-shirt technique respirant pour l\'entraînement', 29.99, '/tigergym/assets/images/tshirt.svg', 'vetements-hommes', 50, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(2, 'Short Training', 'Short léger et confortable pour la musculation', 24.99, '/tigergym/assets/images/tshirt.svg', 'vetements-hommes', 40, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(3, 'Débardeur Muscle', 'Débardeur pour la musculation et le cardio', 19.99, '/tigergym/assets/images/tshirt.svg', 'vetements-hommes', 30, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(4, 'Legging Fitness', 'Legging haute performance avec compression', 39.99, '/tigergym/assets/images/tshirt.svg', 'vetements-femmes', 45, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(5, 'Brassière Sport Pro', 'Brassière maintien maximum pour tous types d\'activités', 34.99, '/tigergym/assets/images/tshirt.svg', 'vetements-femmes', 35, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(6, 'Top Training', 'Top respirant pour le fitness et le yoga', 29.99, '/tigergym/assets/images/tshirt.svg', 'vetements-femmes', 40, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(7, 'Tapis de Course Pro', 'Tapis de course professionnel avec inclinaison automatique', 999.99, '/tigergym/assets/images/haltere.svg', 'machines', 5, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(8, 'Vélo Elliptique Elite', 'Vélo elliptique silencieux avec 12 programmes', 799.99, '/tigergym/assets/images/haltere.svg', 'machines', 3, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(9, 'Rameur Performance', 'Rameur professionnel avec résistance magnétique', 699.99, '/tigergym/assets/images/haltere.svg', 'machines', 4, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(10, 'Whey Protein Gold', 'Protéine premium saveur vanille - 2kg', 39.99, '/tigergym/assets/images/gelule.svg', 'complements', 100, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(11, 'BCAA 2:1:1', 'Acides aminés essentiels - 100 gélules', 29.99, '/tigergym/assets/images/gelule.svg', 'complements', 80, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
-	(12, 'Pre-Workout Boost', 'Booster d\'énergie saveur fruits rouges - 300g', 34.99, '/tigergym/assets/images/gelule.svg', 'complements', 60, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26');
+	(1, 'T-Shirt Performance', 'T-shirt technique respirant pour l\'entraînement', 29.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-hommes', 50, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(2, 'Short Training', 'Short léger et confortable pour la musculation', 24.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-hommes', 40, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(3, 'Débardeur Muscle', 'Débardeur pour la musculation et le cardio', 19.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-hommes', 30, 'S,M,L,XL', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(4, 'Legging Fitness', 'Legging haute performance avec compression', 39.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-femmes', 45, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(5, 'Brassière Sport Pro', 'Brassière maintien maximum pour tous types d\'activités', 34.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-femmes', 35, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(6, 'Top Training', 'Top respirant pour le fitness et le yoga', 29.99, '/tigergym/assets/images/products/t shirt.png', 'vetements-femmes', 40, 'S,M,L', '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(7, 'Tapis de Course Pro', 'Tapis de course professionnel avec inclinaison automatique', 999.99, '/tigergym/assets/images/products/haltere.jpg', 'machines', 5, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(8, 'Vélo Elliptique Elite', 'Vélo elliptique silencieux avec 12 programmes', 799.99, '/tigergym/assets/images/products/haltere.jpg', 'machines', 3, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(9, 'Rameur Performance', 'Rameur professionnel avec résistance magnétique', 699.99, '/tigergym/assets/images/products/haltere.jpg', 'machines', 4, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(10, 'Whey Protein Gold', 'Protéine premium saveur vanille - 2kg', 39.99, '/tigergym/assets/images/products/gelule.png', 'complements', 100, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(11, 'BCAA 2:1:1', 'Acides aminés essentiels - 100 gélules', 29.99, '/tigergym/assets/images/products/gelule.png', 'complements', 80, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26'),
+	(12, 'Pre-Workout Boost', 'Booster d\'énergie saveur fruits rouges - 300g', 34.99, '/tigergym/assets/images/products/gelule.png', 'complements', 60, NULL, '2025-03-22 09:22:26', '2025-03-22 09:22:26');
 
 -- Listage de la structure de table tigergym. comments
 DROP TABLE IF EXISTS `comments`;
