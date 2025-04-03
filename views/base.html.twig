@@ -10,47 +10,50 @@
 </head>
 <body>
     <nav class="main-nav">
-        <div class="nav-brand">
-            <a href="/tigergym/" class="logo">
-                <i class="fas fa-fire"></i>
-                TigerGym
-            </a>
-        </div>
-        <div class="nav-links">
-            <a href="/tigergym/" class="{{ app.request.pathInfo == '/tigergym/' ? 'active' : '' }}">Accueil</a>
-            <a href="/tigergym/machines" class="{{ app.request.pathInfo == '/tigergym/machines' ? 'active' : '' }}">Machines</a>
-            <div class="dropdown">
-                <a href="#" class="{{ app.request.pathInfo starts with '/tigergym/vetements' ? 'active' : '' }}">Vêtements <i class="fas fa-chevron-down"></i></a>
-                <div class="dropdown-content">
-                    <a href="/tigergym/vetements" class="{{ app.request.pathInfo == '/tigergym/vetements' ? 'active' : '' }}">Tous les vêtements</a>
-                    <a href="/tigergym/vetements-hommes" class="{{ app.request.pathInfo == '/tigergym/vetements-hommes' ? 'active' : '' }}">Hommes</a>
-                    <a href="/tigergym/vetements-femmes" class="{{ app.request.pathInfo == '/tigergym/vetements-femmes' ? 'active' : '' }}">Femmes</a>
+        <div class="container">
+            <div class="nav-content">
+                <div class="nav-brand">
+                    <a href="/tigergym/" class="logo">
+                        <i class="fas fa-fire"></i>
+                        TigerGym
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="/tigergym/" class="{{ app.request.pathInfo == '/tigergym/' ? 'active' : '' }}">Accueil</a>
+                    <a href="/tigergym/machines" class="{{ app.request.pathInfo == '/tigergym/machines' ? 'active' : '' }}">Machines</a>
+                    <div class="dropdown">
+                        <a href="#" class="{{ app.request.pathInfo starts with '/tigergym/vetements' ? 'active' : '' }}">Vêtements <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-content">
+                            <a href="/tigergym/vetements" class="{{ app.request.pathInfo == '/tigergym/vetements' ? 'active' : '' }}">Tous les vêtements</a>
+                            <a href="/tigergym/vetements-hommes" class="{{ app.request.pathInfo == '/tigergym/vetements-hommes' ? 'active' : '' }}">Hommes</a>
+                            <a href="/tigergym/vetements-femmes" class="{{ app.request.pathInfo == '/tigergym/vetements-femmes' ? 'active' : '' }}">Femmes</a>
+                        </div>
+                    </div>
+                    <a href="/tigergym/complements" class="{{ app.request.pathInfo == '/tigergym/complements' ? 'active' : '' }}">Compléments</a>
+                </div>
+                <div class="nav-actions">
+                    {% if user is defined and user.is_logged_in %}
+                        {% if user is defined and user.role == 'admin' %}
+                            <a href="/tigergym/admin/articles" class="admin-link {{ app.request.pathInfo starts with '/tigergym/admin/articles' ? 'active' : '' }}">
+                                <i class="fas fa-cog"></i>
+                                Administration
+                            </a>
+                        {% endif %}
+                        <a href="/tigergym/deconnexion" class="nav-logout">
+                            <i class="fas fa-sign-out-alt"></i>
+                            Déconnexion ({{ user.username }})
+                        </a>
+                    {% else %}
+                        <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Connexion
+                        </a>
+                    {% endif %}
+                    <a href="/tigergym/recherche" class="search-btn">
+                        <i class="fas fa-search"></i>
+                    </a>
                 </div>
             </div>
-            <a href="/tigergym/complements" class="{{ app.request.pathInfo == '/tigergym/complements' ? 'active' : '' }}">Compléments</a>
-            <a href="/tigergym/contact" class="{{ app.request.pathInfo == '/tigergym/contact' ? 'active' : '' }}">Contact</a>
-            {% if user is defined and user.is_logged_in %}
-                {% if user is defined and user.role == 'admin' %}
-                    <a href="/tigergym/admin/articles" class="admin-link {{ app.request.pathInfo starts with '/tigergym/admin/articles' ? 'active' : '' }}">
-                        <i class="fas fa-cog"></i>
-                        Administration
-                    </a>
-                {% endif %}
-                <a href="/tigergym/deconnexion" class="nav-logout">
-                    <i class="fas fa-sign-out-alt"></i>
-                    Déconnexion ({{ user.username }})
-                </a>
-            {% else %}
-                <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">
-                    <i class="fas fa-sign-in-alt"></i>
-                    Connexion
-                </a>
-            {% endif %}
-        </div>
-        <div class="nav-actions">
-            <a href="/tigergym/recherche" class="search-btn">
-                <i class="fas fa-search"></i>
-            </a>
         </div>
     </nav>
 
@@ -73,9 +76,8 @@
                 </ul>
             </div>
             <div class="footer-section">
-                <h3>Contact</h3>
+                <h3>Liens utiles</h3>
                 <ul>
-                    <li><a href="/tigergym/contact">Nous contacter</a></li>
                     <li><a href="/tigergym/about">À propos</a></li>
                     <li><a href="/tigergym/mentions-legales">Mentions légales</a></li>
                 </ul>

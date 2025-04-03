@@ -139,9 +139,10 @@ class AdminArticleController extends Controller {
     }
 
     private function validateArticleData($data) {
-        $required = ['title', 'description', 'category', 'price', 'image_url', 'external_link'];
+        $required = ['title', 'description', 'category', 'price'];
         $validated = [];
 
+        // Valider les champs requis
         foreach ($required as $field) {
             if (!isset($data[$field]) || empty(trim($data[$field]))) {
                 throw new \Exception("Le champ '$field' est requis");
@@ -154,13 +155,23 @@ class AdminArticleController extends Controller {
             throw new \Exception("Le prix doit être un nombre positif");
         }
 
-        // Validation des URLs
-        if (!filter_var($validated['image_url'], FILTER_VALIDATE_URL)) {
-            throw new \Exception("L'URL de l'image n'est pas valide");
+        // Validation des URLs optionnelles
+        if (!empty($data['image_url'])) {
+            if (!filter_var($data['image_url'], FILTER_VALIDATE_URL)) {
+                throw new \Exception("L'URL de l'image n'est pas valide");
+            }
+            $validated['image_url'] = trim($data['image_url']);
+        } else {
+            $validated['image_url'] = null;
         }
 
-        if (!filter_var($validated['external_link'], FILTER_VALIDATE_URL)) {
-            throw new \Exception("Le lien externe n'est pas valide");
+        if (!empty($data['external_link'])) {
+            if (!filter_var($data['external_link'], FILTER_VALIDATE_URL)) {
+                throw new \Exception("Le lien externe n'est pas valide");
+            }
+            $validated['external_link'] = trim($data['external_link']);
+        } else {
+            $validated['external_link'] = null;
         }
 
         // Validation de la catégorie

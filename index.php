@@ -10,6 +10,7 @@ use Controllers\RatingController;
 use Controllers\CommentsController;
 use Controllers\AdminArticleController;
 use Controllers\AdminDashboardController;
+use Controllers\ContactController; // Ajout de l'import du ContactController
 use Database\Database;
 use Middlewares\AuthMiddleware;
 
@@ -146,10 +147,10 @@ $router->map('POST', '/ratings/rate', function () use ($twig) {
 });
 
 // Routes d'administration des articles
-$router->map('GET', '/admin/articles', function() use ($twig) {
+$router->map('GET', '/admin/articles', function () use ($twig) {
     $db = Database::getInstance();
-    $controller = new AdminArticleController($db, $twig);
-    $controller->index();
+    $adminArticleController = new AdminArticleController($db, $twig);
+    $adminArticleController->index();
 });
 
 $router->map('GET', '/admin/articles/nouveau', function() use ($twig) {

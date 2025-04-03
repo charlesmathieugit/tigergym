@@ -12,21 +12,21 @@ class ArticleModel {
     }
 
     public function getFeaturedArticles() {
-        $query = "SELECT * FROM articles WHERE category = 'machines' ORDER BY created_at DESC LIMIT 6";
+        $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE category = 'machines' ORDER BY created_at DESC LIMIT 6";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getLatestArticles() {
-        $query = "SELECT * FROM articles WHERE category != 'machines' ORDER BY created_at DESC LIMIT 12";
+        $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE category != 'machines' ORDER BY created_at DESC LIMIT 12";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function getArticleById($id) {
-        $query = "SELECT * FROM articles WHERE id = :id";
+        $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE id = :id";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
@@ -36,10 +36,10 @@ class ArticleModel {
     public function getArticlesByCategory($category) {
         try {
             if ($category === 'vetements') {
-                $query = "SELECT * FROM articles WHERE category IN ('vetements-hommes', 'vetements-femmes') ORDER BY created_at DESC";
+                $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE category IN ('vetements-hommes', 'vetements-femmes') ORDER BY created_at DESC";
                 $stmt = $this->db->prepare($query);
             } else {
-                $query = "SELECT * FROM articles WHERE category = :category ORDER BY created_at DESC";
+                $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE category = :category ORDER BY created_at DESC";
                 $stmt = $this->db->prepare($query);
                 $stmt->bindParam(':category', $category, PDO::PARAM_STR);
             }
@@ -54,7 +54,7 @@ class ArticleModel {
     }
 
     public function getRelatedArticles($category, $currentId, $limit = 3) {
-        $query = "SELECT * FROM articles WHERE category = :category AND id != :currentId ORDER BY created_at DESC LIMIT :limit";
+        $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles WHERE category = :category AND id != :currentId ORDER BY created_at DESC LIMIT :limit";
         $stmt = $this->db->prepare($query);
         $stmt->bindParam(':category', $category, PDO::PARAM_STR);
         $stmt->bindParam(':currentId', $currentId, PDO::PARAM_INT);
@@ -65,7 +65,7 @@ class ArticleModel {
 
     // Méthodes d'administration
     public function getAllArticles() {
-        $query = "SELECT * FROM articles ORDER BY created_at DESC";
+        $query = "SELECT id, name, description, category, price, image, stock, size_available, created_at, updated_at FROM articles ORDER BY created_at DESC";
         $stmt = $this->db->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -73,17 +73,18 @@ class ArticleModel {
 
     public function createArticle($data) {
         try {
-            $query = "INSERT INTO articles (title, description, category, price, image_url, external_link, created_at) 
-                     VALUES (:title, :description, :category, :price, :image_url, :external_link, NOW())";
+            $query = "INSERT INTO articles (name, description, category, price, image, stock, size_available, created_at) 
+                     VALUES (:name, :description, :category, :price, :image, :stock, :size_available, NOW())";
             
             $stmt = $this->db->prepare($query);
             $success = $stmt->execute([
-                'title' => $data['title'],
+                'name' => $data['title'],
                 'description' => $data['description'],
                 'category' => $data['category'],
                 'price' => $data['price'],
-                'image_url' => $data['image_url'],
-                'external_link' => $data['external_link']
+                'image' => $data['image_url'] ?? null,
+                'stock' => null,
+                'size_available' => null
             ]);
 
             if (!$success) {
@@ -101,24 +102,26 @@ class ArticleModel {
     public function updateArticle($id, $data) {
         try {
             $query = "UPDATE articles 
-                     SET title = :title, 
+                     SET name = :name, 
                          description = :description, 
                          category = :category, 
                          price = :price, 
-                         image_url = :image_url, 
-                         external_link = :external_link,
+                         image = :image,
+                         stock = :stock,
+                         size_available = :size_available,
                          updated_at = NOW()
                      WHERE id = :id";
             
             $stmt = $this->db->prepare($query);
             $success = $stmt->execute([
                 'id' => $id,
-                'title' => $data['title'],
+                'name' => $data['title'],
                 'description' => $data['description'],
                 'category' => $data['category'],
                 'price' => $data['price'],
-                'image_url' => $data['image_url'],
-                'external_link' => $data['external_link']
+                'image' => $data['image_url'] ?? null,
+                'stock' => null,
+                'size_available' => null
             ]);
 
             if (!$success) {

@@ -173,7 +173,7 @@
                             <option value="vetements-hommes" {{ article.category is defined and article.category == 'vetements-hommes' ? 'selected' : '' }}>Vêtements Hommes</option>
                             <option value="vetements-femmes" {{ article.category is defined and article.category == 'vetements-femmes' ? 'selected' : '' }}>Vêtements Femmes</option>
                             <option value="accessoires" {{ article.category is defined and article.category == 'accessoires' ? 'selected' : '' }}>Accessoires</option>
-                            <option value="supplements" {{ article.category is defined and article.category == 'supplements' ? 'selected' : '' }}>Suppléments</option>
+                            <option value="complements" {{ article.category is defined and article.category == 'complements' ? 'selected' : '' }}>Compléments</option>
                         </select>
                     </div>
 
@@ -184,15 +184,15 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="image_url">URL de l'image *</label>
+                        <label for="image_url">URL de l'image</label>
                         <input type="url" id="image_url" name="image_url" 
-                               value="{{ article.image_url ?? '' }}" required>
+                               value="{{ article.image_url ?? '' }}">
                     </div>
 
                     <div class="form-group">
-                        <label for="external_link">Lien d'achat externe *</label>
+                        <label for="external_link">Lien d'achat externe</label>
                         <input type="url" id="external_link" name="external_link" 
-                               value="{{ article.external_link ?? '' }}" required>
+                               value="{{ article.external_link ?? '' }}">
                     </div>
 
                     {% if article is defined and article.image_url %}
