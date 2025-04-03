@@ -25,29 +25,26 @@ class UserController extends Controller
     {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $username = $_POST['username'] ?? '';
-            $email = $_POST['mail'] ?? '';
-            $password = $_POST['pass'] ?? '';
+            $email = $_POST['email'] ?? '';
+            $password = $_POST['password'] ?? '';
 
             if (!empty($username) && !empty($email) && !empty($password)) {
                 try {
                     $userModel = new UserModel($this->db);
-                    $issuccess = $userModel->register($username, $email, $password);
+                    $issuccess = $userModel->register($email, $password, $username);
 
                     if ($issuccess) {
-                        $id = $userModel->get_last_id();
-                        $user = $userModel->get_user_by_id($id);
-                        $_SESSION['id'] =$user->id;
-                        $_SESSION["mail"] = $user->mail;
-                        $_SESSION["username"] = $user->username;
-                        $_SESSION["role"] = $user->role;
-                        $_SESSION["user_id"] = $user->id;
+                        $_SESSION["mail"] = $email;
+                        $_SESSION["username"] = $username;
+                        $_SESSION["role"] = 'user';
                         header('Location: /tigergym/admin');
                         exit;
                     } else {
-                        $error = 'Impossible de créer l\'utilisateur.';
+                        $error = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
                     }
                 } catch (\PDOException $e) {
-                    $error = 'Erreur lors de l\'inscription : ' . $e->getMessage();
+                    error_log("Erreur d'inscription : " . $e->getMessage());
+                    $error = 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.';
                 }
             } else {
                 $error = 'Tous les champs sont obligatoires.';
@@ -56,6 +53,8 @@ class UserController extends Controller
 
         $this->render('inscription.html.twig', [
             'error' => $error ?? null,
+            'title' => 'Inscription',
+            'h1' => 'Créer un compte'
         ]);
     }
 

@@ -41,7 +41,7 @@
                         {% endif %}
                         <a href="/tigergym/deconnexion" class="nav-logout">
                             <i class="fas fa-sign-out-alt"></i>
-                            Déconnexion ({{ user.username }})
+                            Déconnexion ({{ user.firstname }} {{ user.lastname }})
                         </a>
                     {% else %}
                         <a href="/tigergym/connexion" class="{{ app.request.pathInfo == '/tigergym/connexion' ? 'active' : '' }}">

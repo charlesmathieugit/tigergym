@@ -43,27 +43,33 @@ class UserModel {
         return null;
     }
 
-    public function register(string $email, string $password, string $username, string $role = 'user') {
+    public function register(string $email, string $password, string $username) {
         try {
             error_log("\n=== Tentative d'inscription ===");
             error_log("Email: " . $email);
             error_log("Username: " . $username);
             error_log("Password length: " . strlen($password));
             
+            // Séparer le nom complet en prénom et nom
+            $nameParts = explode(' ', $username, 2);
+            $prenom = $nameParts[0];
+            $nom = isset($nameParts[1]) ? $nameParts[1] : '';
+            
             // Hasher le mot de passe
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
             
             // Préparer et exécuter la requête
             $stmt = $this->db->prepare("
-                INSERT INTO {$this->table} (email, password, username, role, created_at)
-                VALUES (:email, :password, :username, :role, NOW())
+                INSERT INTO {$this->table} (email, password, nom, prenom, role, created_at)
+                VALUES (:email, :password, :nom, :prenom, 'user', :created_at)
             ");
             
             $result = $stmt->execute([
                 'email' => $email,
                 'password' => $hashedPassword,
-                'username' => $username,
-                'role' => $role
+                'nom' => $nom,
+                'prenom' => $prenom,
+                'created_at' => date('Y-m-d H:i:s')
             ]);
 
             if ($result) {
